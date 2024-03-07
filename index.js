@@ -31,7 +31,7 @@ async function run() {
     await client.connect();
 
     const serviceCollection = client.db('zurichCarService').collection('services');
-    const bookingCollection = client.db('carDoctor').collection('bookings');
+    const bookingCollection = client.db('zurichCarService').collection('bookings');
 
 
 
@@ -56,6 +56,27 @@ async function run() {
             res.send(result);
         })
 
+
+          // bookings 
+          app.get('/bookings',  async (req, res) => {
+            const  booking =  req.body;
+            console.log('booking')
+            
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await bookingCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        //bookings api
+        app.post('/bookings', async(req, res) => {
+          const booking = req.body;
+          console.log(booking);
+          const result = await bookingCollection.insertOne(booking);
+          res.send(result);
+        })
 
 
     // Send a ping to confirm a successful connection
