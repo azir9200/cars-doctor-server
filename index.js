@@ -9,13 +9,16 @@ require('dotenv').config()
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors({
-  origin: ['http://localhost:5173/'],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
+// middleware
+// app.use(cors({
+//   origin: ['http://localhost:5173/'],
+//   credentials: true
+// }));
+// app.use(express.json());
 
-console.log(process.env.DB_PASS)
+ console.log(process.env.DB_PASS)
 console.log(process.env.DB_USER)
 
 
@@ -30,6 +33,24 @@ const client = new MongoClient(uri, {
   }
 });
 
+// const express = require('express');
+// const cors = require('cors');
+// const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+// const jwt = require('jsonwebtoken');
+// require('dotenv').config();
+
+// const port = process.env.PORT || 5000;
+
+// const app = express();
+
+// // middleware
+// app.use(cors());
+// app.use(express.json());
+
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xq1u8gq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -39,32 +60,33 @@ async function run() {
     const bookingCollection = client.db('zurichCarService').collection('bookings');
 
 //auth related api
-app.post('/jwt', async(req, res) =>{
-  const user = req.body;
-  console.log('user for token', user);
-   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+// app.post('/jwt', async(req, res) =>{
+//   const user = req.body;
+//   console.log('user for token', user);
+//    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
 
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'none'
-})
-    .send({success: true});
-})
+//   res.cookie('token', token, {
+//     httpOnly: true,
+//     secure: false,
+//     sameSite: 'none'
+// })
+//     .send({success: true});
+// })
 
 
 //services related api
-app.get("/services", async (req, res) => {
-  const result = await serviceCollection.find().toArray();
-  res.send(result);
-  console.log(result)
-});
+// app.get("/services", async (req, res) => {
+//   const result = await serviceCollection.find().toArray();
+//   res.send(result);
+//   console.log(result)
+// });
 
-    // app.get('/services', async(req, res) =>{
-    //   const cursor = serviceCollection.find();
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // })
+    app.get('/services', async(req, res) =>{
+      const cursor = serviceCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+      console.log(result, 'my service data')
+    })
 
 
      app.get('/services/:id', async (req, res) => {
@@ -137,7 +159,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('boss is sitting')
+  res.send('car service is running on port ')
 })
 
 app.listen(port, () => {
